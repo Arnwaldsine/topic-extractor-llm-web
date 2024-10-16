@@ -8,9 +8,16 @@ S3_BUCKET = 'aws-glue-assets-339713014948-us-east-1'
 S3_REGION = 'us-east-1'
 GLUE_JOB_NAME = 'topic-extraction-llm'
 
+access_key = os.environ.get('ACCESS_KEY')
+secret_access_key = os.environ.get('ACCESS_KEY_SECRET')
+
 # Inicializar clientes AWS
-s3_client = boto3.client('s3', region_name=S3_REGION)
-glue_client = boto3.client('glue', region_name=S3_REGION)
+s3_client = boto3.client('s3', region_name=S3_REGION,
+    aws_access_key_id=access_key,
+    aws_secret_access_key=secret_access_key)
+glue_client = boto3.client('glue', region_name=S3_REGION,
+    aws_access_key_id=access_key,
+    aws_secret_access_key=secret_access_key)
 
 # Función para subir archivo a S3
 def upload_to_s3(uploaded_file):
