@@ -42,7 +42,7 @@ def trigger_glue_job(s3_file_path, run_name):
             JobName=GLUE_JOB_NAME,
             Arguments={
                 '--conversation_text_file': s3_file_path,
-                '--run_name': run_name  # Argumento adicional con el nombre de la corrida
+                '--execution_id': run_name  # Argumento adicional con el nombre de la corrida
             }
         )
         st.success("¡El job de Glue ha comenzado exitosamente!")
