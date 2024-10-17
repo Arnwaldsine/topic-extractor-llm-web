@@ -64,7 +64,7 @@ def trigger_glue_job(s3_file_path, run_name):
                 '--DB_TOPICS_DBNAME': db_secret['engine'],
                 '--DB_TOPICS_HOST' : db_secret['host'],
                 '--DB_TOPICS_PASSWORD' : db_secret['password'],
-                '--DB_TOPICS_PORT'  : db_secret['port'],
+                '--DB_TOPICS_PORT'  : str(db_secret['port']),
                 '--DB_TOPICS_USER' : db_secret['username'],
                 '--OPENAI_API_KEY ': openai_secret['API_KEY'], 
                 '--conversation_text_file': s3_file_path,
