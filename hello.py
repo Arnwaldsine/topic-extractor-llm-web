@@ -66,7 +66,7 @@ def trigger_glue_job(s3_file_path, run_name):
                 '--DB_TOPICS_PASSWORD' : db_secret['password'],
                 '--DB_TOPICS_PORT'  : db_secret['port'],
                 '--DB_TOPICS_USER' : db_secret['username'],
-                '--OPENAI_API_KEY ': db_secret['API_KEY'], 
+                '--OPENAI_API_KEY ': openai_secret['API_KEY'], 
                 '--conversation_text_file': s3_file_path,
                 '--execution_id': run_name  # Argumento adicional con el nombre de la corrida
             }
