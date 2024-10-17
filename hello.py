@@ -2,7 +2,7 @@ import streamlit as st
 import boto3
 from botocore.exceptions import NoCredentialsError
 import os
-
+import json
 # AWS S3 y Glue configuraciones
 S3_BUCKET = 'aws-glue-assets-339713014948-us-east-1'
 S3_REGION = 'us-east-1'
@@ -21,18 +21,21 @@ glue_client = boto3.client('glue', region_name=S3_REGION,
 sm_client = boto3.client('secretsmanager', region_name=S3_REGION,
     aws_access_key_id=access_key,
     aws_secret_access_key=secret_access_key)
-
 def get_credentials():
     try:
+        # Fetch OpenAI secret
         openai_response = sm_client.get_secret_value(SecretId="openai_key_secret")
         openai_secret = openai_response['SecretString']
-
-        db_secret = sm_client.get_secret_value(SecretId="llm-db-secret")
-        db_secret = db_secret['SecretString']
+        
+        # Fetch DB secret and parse the JSON string
+        db_secret_response = sm_client.get_secret_value(SecretId="llm-db-secret")
+        db_secret = json.loads(db_secret_response['SecretString'])  # Parsing the JSON string into a dictionary
+        
     except Exception as e:
         st.error(f"Error al obtener las credenciales de AWS: {e}")
-    return openai_secret, db_secret
+        return None, None
 
+    return openai_secret, db_secret
 # Función para subir archivo a S3
 def upload_to_s3(uploaded_file):
     file_name = uploaded_file.name
