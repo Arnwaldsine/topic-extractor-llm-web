@@ -18,6 +18,20 @@ s3_client = boto3.client('s3', region_name=S3_REGION,
 glue_client = boto3.client('glue', region_name=S3_REGION,
     aws_access_key_id=access_key,
     aws_secret_access_key=secret_access_key)
+sm_client = boto3.client('secretsmanager', region_name=S3_REGION,
+    aws_access_key_id=access_key,
+    aws_secret_access_key=secret_access_key)
+
+def get_credentials():
+    try:
+        openai_response = sm_client.get_secret_value(SecretId="openai_key_secret")
+        openai_secret = openai_response['SecretString']
+
+        db_secret = sm_client.get_secret_value(SecretId="llm-db-secret")
+        db_secret = db_secret['SecretString']
+    except Exception as e:
+        st.error(f"Error al obtener las credenciales de AWS: {e}")
+    return openai_secret, db_secret
 
 # Función para subir archivo a S3
 def upload_to_s3(uploaded_file):
@@ -37,10 +51,19 @@ def upload_to_s3(uploaded_file):
 
 # Función para disparar el job de Glue
 def trigger_glue_job(s3_file_path, run_name):
+
+    openai_secret, db_secret = get_credentials()
+
     try:
         response = glue_client.start_job_run(
             JobName=GLUE_JOB_NAME,
             Arguments={
+                '--DB_TOPICS_DBNAME': db_secret['engine'],
+                '--DB_TOPICS_HOST' : db_secret['host'],
+                '--DB_TOPICS_PASSWORD' : db_secret['password'],
+                '--DB_TOPICS_PORT'  : db_secret['port'],
+                '--DB_TOPICS_USER' : db_secret['username'],
+                '--OPENAI_API_KEY ': db_secret['API_KEY'], 
                 '--conversation_text_file': s3_file_path,
                 '--execution_id': run_name  # Argumento adicional con el nombre de la corrida
             }
