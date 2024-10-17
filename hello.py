@@ -25,7 +25,7 @@ def get_credentials():
     try:
         # Fetch OpenAI secret
         openai_response = sm_client.get_secret_value(SecretId="openai_key_secret")
-        openai_secret = openai_response['SecretString']
+        openai_secret = json.loads(openai_response['SecretString'])
         
         # Fetch DB secret and parse the JSON string
         db_secret_response = sm_client.get_secret_value(SecretId="llm-db-secret")
