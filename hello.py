@@ -73,7 +73,7 @@ def trigger_glue_job(file_name, run_name):
             }
         )
         st.success("¡El job de Glue ha comenzado exitosamente!")
-        st.json(response)
+        #st.json(response)
     except Exception as e:
         st.error(f"Error al iniciar el job de Glue: {e}")
 
