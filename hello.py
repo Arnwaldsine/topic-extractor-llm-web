@@ -107,7 +107,7 @@ def trigger_glue_job(file_name, run_name):
             else:
                 # Actualiza el mensaje de estado dinámicamente
                 status_message.info(f"Estado actual del job: {status}. Esperando a que finalice...")
-                time.sleep(30)  # Esperar 30 segundos antes de volver a verificar el estado
+                time.sleep(20)  
 
     except Exception as e:
         st.error(f"Error al iniciar el job de Glue: {e}")
