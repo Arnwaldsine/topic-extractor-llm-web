@@ -112,8 +112,17 @@ def show_welcome_page():
             font-size: 20px;
             color: #b5b8b8;
         }
+        .center-img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 200px;
+        }
     </style>
     """, unsafe_allow_html=True)
+    left_co, cent_co,last_co = st.columns(3)
+    with cent_co:
+        st.image("logo.png", width=150, use_column_width=False)
 
     st.markdown('<p class="big-font">Mejore la experiencia del cliente con análisis conversacional</p>', unsafe_allow_html=True)
 
