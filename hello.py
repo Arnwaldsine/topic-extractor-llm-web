@@ -2,6 +2,7 @@ import streamlit as st
 import boto3
 from botocore.exceptions import NoCredentialsError
 import os
+import time
 import json
 # AWS S3 y Glue configuraciones
 S3_BUCKET = 'aws-glue-assets-339713014948-us-east-1'
@@ -52,10 +53,17 @@ def upload_to_s3(uploaded_file):
     except Exception as e:
         st.error(f"Error al subir el archivo a S3: {e}")
         return None
-
+    
+def check_glue_job_status(job_name, job_run_id):
+    try:
+        response = glue_client.get_job_run(JobName=job_name, RunId=job_run_id)
+        status = response['JobRun']['JobRunState']
+        return status
+    except Exception as e:
+        st.error(f"Error al verificar el estado del job: {e}")
+        return None
 # Función para disparar el job de Glue
 def trigger_glue_job(file_name, run_name):
-
     openai_secret, db_secret = get_credentials()
 
     try:
@@ -72,8 +80,24 @@ def trigger_glue_job(file_name, run_name):
                 '--execution_id': run_name  # Argumento adicional con el nombre de la corrida
             }
         )
-        st.success("¡El job de Glue ha comenzado exitosamente!")
-        #st.json(response)
+        job_run_id = response['JobRunId']
+        st.success(f"¡El job de Glue ha comenzado exitosamente con JobRunId: {job_run_id}!")
+
+        # Comprobando el estado del job
+        while True:
+            status = check_glue_job_status(GLUE_JOB_NAME, job_run_id)
+            if status == "SUCCEEDED":
+                st.success("¡El job de Glue ha finalizado correctamente!")
+                break
+            elif status == "FAILED":
+                st.error("El job de Glue falló.")
+                break
+            elif status == "STOPPED":
+                st.warning("El job de Glue fue detenido.")
+                break
+            else:
+                st.info(f"Estado actual del job: {status}. Esperando a que finalice...")
+                time.sleep(30)  # Esperar 30 segundos antes de volver a verificar el estado
     except Exception as e:
         st.error(f"Error al iniciar el job de Glue: {e}")
 
