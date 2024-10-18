@@ -45,7 +45,7 @@ def upload_to_s3(uploaded_file):
 
     try:
         s3_client.upload_fileobj(uploaded_file, S3_BUCKET, file_path_in_s3)
-        st.success(f"El archivo fue subido exitosamente a S3: s3://{S3_BUCKET}/{file_path_in_s3}")
+        st.success("El archivo fue subido exitosamente")
         return f"s3://{S3_BUCKET}/{file_path_in_s3}"
     except NoCredentialsError:
         st.error("No se encontraron credenciales de AWS.")
@@ -87,7 +87,7 @@ def trigger_glue_job(file_name, run_name):
             }
         )
         job_run_id = response['JobRunId']
-        st.success(f"¡El job de Glue ha comenzado exitosamente con JobRunId: {job_run_id}!")
+        st.success("¡El job de Glue ha comenzado exitosamente!")
 
         # Crear un espacio vacío para actualizar los mensajes
         status_message = st.empty()
@@ -189,7 +189,7 @@ def show_upload_page():
     # Input para el nombre de identificar el lote
     run_name = st.text_input("Ingrese el nombre para identificar el lote")
 
-    uploaded_file = st.file_uploader("Elija un archivo de texto", type="txt")
+    uploaded_file = st.file_uploader("Elija un archivo de texto",  type=["json", "txt", "csv", "yaml"])
     
     if uploaded_file is not None and run_name:
         s3_file_path = upload_to_s3(uploaded_file)
