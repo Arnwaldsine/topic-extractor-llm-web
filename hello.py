@@ -152,7 +152,7 @@ def show_upload_page():
         
         if s3_file_path:
             st.write("Iniciando job de Glue para el análisis...")
-            trigger_glue_job(uploaded_file, run_name)
+            trigger_glue_job(uploaded_file.name, run_name)
     elif not run_name:
         st.warning("Por favor, ingrese un nombre para identificar el lote.")
 
