@@ -11,6 +11,7 @@ GLUE_JOB_NAME = 'topic-extraction-llm'
 access_key = os.environ.get('ACCESS_KEY')
 secret_access_key = os.environ.get('ACCESS_KEY_SECRET')
 
+st.set_page_config(page_title="Gen AI Demo")
 # Inicializar clientes AWS
 s3_client = boto3.client('s3', region_name=S3_REGION,
     aws_access_key_id=access_key,
