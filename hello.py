@@ -53,7 +53,7 @@ def upload_to_s3(uploaded_file):
         return None
 
 # Función para disparar el job de Glue
-def trigger_glue_job(s3_file_path, run_name):
+def trigger_glue_job(file_name, run_name):
 
     openai_secret, db_secret = get_credentials()
 
@@ -67,7 +67,7 @@ def trigger_glue_job(s3_file_path, run_name):
                 '--DB_TOPICS_PORT'  : str(db_secret['port']),
                 '--DB_TOPICS_USER' : db_secret['username'],
                 '--OPENAI_API_KEY ': openai_secret['API_KEY'], 
-                '--conversation_text_file': s3_file_path,
+                '--conversation_text_file': file_name,
                 '--execution_id': run_name  # Argumento adicional con el nombre de la corrida
             }
         )
@@ -152,7 +152,7 @@ def show_upload_page():
         
         if s3_file_path:
             st.write("Iniciando job de Glue para el análisis...")
-            trigger_glue_job(s3_file_path, run_name)
+            trigger_glue_job(uploaded_file, run_name)
     elif not run_name:
         st.warning("Por favor, ingrese un nombre para identificar el lote.")
 
