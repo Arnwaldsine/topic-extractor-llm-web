@@ -62,7 +62,7 @@ def check_glue_job_status(job_name, job_run_id):
     except Exception as e:
         st.error(f"Error al verificar el estado del job: {e}")
         return None
-# Función para disparar el job de Glue
+
 def trigger_glue_job(file_name, run_name):
     openai_secret, db_secret = get_credentials()
 
@@ -71,11 +71,11 @@ def trigger_glue_job(file_name, run_name):
             JobName=GLUE_JOB_NAME,
             Arguments={
                 '--DB_TOPICS_DBNAME': db_secret['engine'],
-                '--DB_TOPICS_HOST' : db_secret['host'],
-                '--DB_TOPICS_PASSWORD' : db_secret['password'],
-                '--DB_TOPICS_PORT'  : str(db_secret['port']),
-                '--DB_TOPICS_USER' : db_secret['username'],
-                '--OPENAI_API_KEY ': openai_secret['API_KEY'], 
+                '--DB_TOPICS_HOST': db_secret['host'],
+                '--DB_TOPICS_PASSWORD': db_secret['password'],
+                '--DB_TOPICS_PORT': str(db_secret['port']),
+                '--DB_TOPICS_USER': db_secret['username'],
+                '--OPENAI_API_KEY': openai_secret['API_KEY'],
                 '--conversation_text_file': file_name,
                 '--execution_id': run_name  # Argumento adicional con el nombre de la corrida
             }
@@ -83,24 +83,28 @@ def trigger_glue_job(file_name, run_name):
         job_run_id = response['JobRunId']
         st.success(f"¡El job de Glue ha comenzado exitosamente con JobRunId: {job_run_id}!")
 
+        # Crear un espacio vacío para actualizar los mensajes
+        status_message = st.empty()
+
         # Comprobando el estado del job
         while True:
             status = check_glue_job_status(GLUE_JOB_NAME, job_run_id)
             if status == "SUCCEEDED":
-                st.success("¡El job de Glue ha finalizado correctamente!")
+                status_message.success("¡El job de Glue ha finalizado correctamente!")
                 break
             elif status == "FAILED":
-                st.error("El job de Glue falló.")
+                status_message.error("El job de Glue falló.")
                 break
             elif status == "STOPPED":
-                st.warning("El job de Glue fue detenido.")
+                status_message.warning("El job de Glue fue detenido.")
                 break
             else:
-                st.info(f"Estado actual del job: {status}. Esperando a que finalice...")
+                # Actualiza el mensaje de estado dinámicamente
+                status_message.info(f"Estado actual del job: {status}. Esperando a que finalice...")
                 time.sleep(30)  # Esperar 30 segundos antes de volver a verificar el estado
+
     except Exception as e:
         st.error(f"Error al iniciar el job de Glue: {e}")
-
 # Navegación entre páginas
 def main():
     st.sidebar.title("Navegación")
