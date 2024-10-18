@@ -105,12 +105,12 @@ def show_welcome_page():
         }
         .intro-paragraph {
             font-size: 24px;
-            color: #b5b8b8;
+            color: #979797;
             font-weight: 400;
         }
         .benefit-list {
             font-size: 20px;
-            color: #b5b8b8;
+            color: #979797;
         }
         .center-img {
             display: block;
