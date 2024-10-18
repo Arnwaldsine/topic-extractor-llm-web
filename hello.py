@@ -56,12 +56,18 @@ def upload_to_s3(uploaded_file):
     
 def check_glue_job_status(job_name, job_run_id):
     try:
+        # Obtener los detalles del job run
         response = glue_client.get_job_run(JobName=job_name, RunId=job_run_id)
         status = response['JobRun']['JobRunState']
-        return status
+        
+        # Obtener el mensaje de error si existe
+        error_message = response['JobRun'].get('ErrorMessage', 'No se proporcionó mensaje de error')
+        
+        # Devolver el estado y el mensaje de error (si existe)
+        return status, error_message
     except Exception as e:
         st.error(f"Error al verificar el estado del job: {e}")
-        return None
+        return None, None
 
 def trigger_glue_job(file_name, run_name):
     openai_secret, db_secret = get_credentials()
@@ -88,12 +94,12 @@ def trigger_glue_job(file_name, run_name):
 
         # Comprobando el estado del job
         while True:
-            status = check_glue_job_status(GLUE_JOB_NAME, job_run_id)
+            status, error_message = check_glue_job_status(GLUE_JOB_NAME, job_run_id)
             if status == "SUCCEEDED":
                 status_message.success("¡El job de Glue ha finalizado correctamente!")
                 break
             elif status == "FAILED":
-                status_message.error("El job de Glue falló.")
+                status_message.error("El job de Glue falló: "+error_message)
                 break
             elif status == "STOPPED":
                 status_message.warning("El job de Glue fue detenido.")
